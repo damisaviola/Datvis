@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Komentar YouTube</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@latest"></script>
+    <style>
+        body {
+            background-color: #f4f6f9; /* Soft gray background */
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            flex-grow: 1;
+            padding: 24px;
+        }
+
+        .card-header {
+            background-color: #4A90E2; /* Primary blue */
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+            padding: 14px 24px;
+        }
+
+        .row {
+            margin-top: 30px;
+        }
+
+        .col-md-4 {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 0 0 100%;
+            }
+        }
+
+        h1, h5 {
+            font-family: 'JetBrains Mono', monospace;
+            color: #333333;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+            background-color: #2C3E50; /* Darker header */
+        }
+
+        .navbar .navbar-brand {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .navbar .nav-link {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .navbar .nav-link:hover {
+            color: #F39C12 !important; /* Hover color */
+        }
+
+        table th, table td {
+            vertical-align: middle;
+            padding: 12px;
+            font-size: 0.95rem;
+        }
+
+        table thead {
+            background-color: #34495E;
+            color: #fff;
+        }
+
+        table tbody tr:hover {
+            background-color: #ECF0F1;
+        }
+
+        .table-bordered {
+            border: 1px solid #BDC3C7;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #FAFAFA;
+        }
+
+        .table-sm th, .table-sm td {
+            padding: 8px;
+        }
+
+        .card-header.bg-primary {
+            background-color: #3498db;
+        }
+
+        .card-header.bg-secondary {
+            background-color: #2ecc71;
+        }
+
+        .card-header.bg-info {
+            background-color: #1abc9c;
+        }
+
+        .card-header.bg-warning {
+            background-color: #f39c12;
+        }
+
+        .card-header.bg-success {
+            background-color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Dashboard Komentar YouTube</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Dashboard Komentar YouTube</h1>
+
+        <!-- Row for Word Cloud, Pie Chart, Doughnut Chart, and other charts -->
+        <div class="row">
+            <!-- Word Cloud Card -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Word Cloud</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="wordCloudCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Plot Card -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Line Plot Frekuensi Kata</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="linePlotCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart Card -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Pie Chart Frekuensi Kata</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="pieChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horizontal Bar Chart Card -->
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Horizontal Bar Plot Frekuensi Kata</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="horizontalBarChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart Card -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Doughnut Chart Frekuensi Kata</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="doughnutChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Doughnut Chart Frekuensi Kata</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="areaChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table for Top Words -->
+            <div class="col-md-12 mb-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Kata Teratas</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kata</th>
+                                    <th>Frekuensi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topWordsTable">
+                                <!-- Data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
