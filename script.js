@@ -336,7 +336,7 @@ fetch('processed_comments.json')
         });
     }
     
-    //Chart.register(ChartDataLabels);
+    Chart.register(ChartDataLabels);
 
     function displayDoughnutChart(wordEntries) {
         const ctx = document.getElementById('doughnutChartCanvas').getContext('2d');
